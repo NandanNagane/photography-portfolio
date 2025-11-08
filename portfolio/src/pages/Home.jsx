@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
@@ -13,7 +12,8 @@ export default function Home() {
     "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=800&q=80",
     "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80",
     "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
-    "https://images.unsplash.com/photo-1533581916931-c15634827c86?w=800&q=80",
+    "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80",
+    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=800&q=80"
   ];
 
   return (
@@ -50,11 +50,11 @@ export default function Home() {
             <p className="text-lg md:text-xl text-white/90 mb-8 font-light tracking-wide">
               Welcome to my world of artistic photography
             </p>
-            <Link to={createPageUrl("Portfolio")}>
+            <Link to="/portfolio">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-900 rounded-full font-medium hover:bg-gray-100 transition-colors group"
+                className="inline-flex items-center gap-2 px-2.5 py-1.5 bg-white text-gray-900 rounded-full font-medium hover:bg-gray-100 transition-colors group"
               >
                 View Portfolio
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -136,7 +136,7 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-center mt-12"
           >
-            <Link to={createPageUrl("Portfolio")}>
+            <Link to="/portfolio">
               <button className="px-8 py-3 border-2 border-gray-900 text-gray-900 rounded-full font-medium hover:bg-gray-900 hover:text-white transition-all duration-300">
                 Explore Full Portfolio
               </button>
@@ -166,7 +166,7 @@ export default function Home() {
                 matched only by my desire to create unique visual stories for
                 every client.
               </p>
-              <Link to={createPageUrl("About")}>
+              <Link to="/about">
                 <button className="inline-flex items-center gap-2 text-white hover:text-gray-300 transition-colors group">
                   <span className="font-medium">Learn More About Me</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

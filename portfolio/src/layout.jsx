@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { createPageUrl } from "@/utils";
+import React, { useState, useEffect, useContext } from "react";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { Camera, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { NavContext } from "./context/NavContext";
 
-export default function Layout({ children, currentPageName }) {
+export default function Layout() {
+  const { isNavHidden } = useContext(NavContext);
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -35,10 +36,10 @@ export default function Layout({ children, currentPageName }) {
   }, [lastScrollY]);
 
   const navItems = [
-    { name: "Home", path: "Home" },
-    { name: "About", path: "About" },
-    { name: "Portfolio", path: "Portfolio" },
-    { name: "Contact", path: "Contact" },
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about" },
+    { name: "Portfolio", path: "/portfolio" },
+    { name: "Contact", path: "/contact" },
   ];
 
   return (
@@ -46,56 +47,71 @@ export default function Layout({ children, currentPageName }) {
       {/* Navigation */}
       <motion.nav
         initial={{ y: 0 }}
-        animate={{ y: hidden ? -100 : 0 }}
+        animate={{ y: hidden || isNavHidden ? -100 : 0 }}
         transition={{ duration: 0.3 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
             ? "bg-white/90 backdrop-blur-md shadow-sm"
-            : "bg-transparent"
+            : "bg-transparent text-gray-100 "
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link
-              to={createPageUrl("Home")}
+              to="/"
               className="flex items-center gap-2 group"
             >
-              <Camera className="w-6 h-6 text-gray-800 group-hover:text-gray-600 transition-colors" />
-              <span className="text-xl font-light tracking-wider text-gray-800">
+              <Camera className={`w-6 h-6 group-hover:text-gray-600 transition-colors ${
+                scrolled ? "text-gray-800" : "text-white"
+              }`} />
+              <span className={`text-xl font-light tracking-wider ${
+                scrolled ? "text-gray-800" : "text-white"
+              }`}>
                 SHRI<span className="font-semibold">PHOTO</span>
               </span>
             </Link>
 
             {/* Desktop Navigation */}
             <ul className="hidden md:flex items-center gap-8">
-              {navItems.map((item) => (
-                <li key={item.path}>
-                  <Link
-                    to={createPageUrl(item.path)}
-                    className={`text-sm font-medium tracking-wide transition-colors relative group ${
-                      location.pathname === createPageUrl(item.path)
-                        ? "text-gray-900"
-                        : "text-gray-600 hover:text-gray-900"
-                    }`}
-                  >
-                    {item.name}
-                    <span
-                      className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-gray-900 transition-all duration-300 group-hover:w-full ${
-                        location.pathname === createPageUrl(item.path)
-                          ? "w-full"
-                          : ""
+              {navItems.map((item) => {
+                const isActive =
+                  item.path === "/"
+                    ? location.pathname === "/"
+                    : location.pathname.startsWith(item.path);
+
+                return (
+                  <li key={item.path}>
+                    <Link
+                      to={item.path}
+                      className={`text-sm font-medium tracking-wide transition-colors relative group ${
+                        scrolled
+                          ? isActive
+                            ? "text-gray-900"
+                            : "text-gray-600 hover:text-gray-900"
+                          : isActive
+                          ? "text-white"
+                          : "text-white/80 hover:text-white"
                       }`}
-                    />
-                  </Link>
-                </li>
-              ))}
+                    >
+                      {item.name}
+                      <span
+                        className={`absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
+                          scrolled ? "bg-gray-900" : "bg-white"
+                        } ${isActive ? "w-full" : ""}`}
+                      />
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden text-gray-800 hover:text-gray-600 transition-colors"
+              className={`md:hidden hover:text-gray-600 transition-colors ${
+                scrolled ? "text-gray-800" : "text-white"
+              }`}
             >
               {mobileMenuOpen ? (
                 <X className="w-6 h-6" />
@@ -116,21 +132,26 @@ export default function Layout({ children, currentPageName }) {
               className="md:hidden bg-white border-t border-gray-200"
             >
               <ul className="px-6 py-4 space-y-3">
-                {navItems.map((item) => (
-                  <li key={item.path}>
-                    <Link
-                      to={createPageUrl(item.path)}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`block text-base font-medium transition-colors ${
-                        location.pathname === createPageUrl(item.path)
-                          ? "text-gray-900"
-                          : "text-gray-600"
-                      }`}
-                    >
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
+                {navItems.map((item) => {
+                  const isActive =
+                    item.path === "/"
+                      ? location.pathname === "/"
+                      : location.pathname.startsWith(item.path);
+
+                  return (
+                    <li key={item.path}>
+                      <Link
+                        to={item.path}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`block text-base font-medium transition-colors ${
+                          isActive ? "text-gray-900" : "text-gray-600"
+                        }`}
+                      >
+                        {item.name}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </motion.div>
           )}
@@ -139,7 +160,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <main className="min-h-screen">
-        {children}
+        <Outlet />
       </main>
 
       {/* Footer */}

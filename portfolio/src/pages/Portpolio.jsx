@@ -1,8 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { NavContext } from "../context/NavContext";
 
 export default function Portfolio() {
+  const { setIsNavHidden } = useContext(NavContext);
+  const filterRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (filterRef.current) {
+        const { top } = filterRef.current.getBoundingClientRect();
+        // When the filter bar is at the top, hide the main nav.
+        // The offset value (e.g., 1) is to prevent floating point inaccuracies.
+        setIsNavHidden(top <= 1);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    // Set initial state
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      // Reset on component unmount
+      setIsNavHidden(false);
+    };
+  }, [setIsNavHidden]);
+
   const [selectedImage, setSelectedImage] = useState(null);
   const [activeCategory, setActiveCategory] = useState("all");
 
@@ -77,7 +102,10 @@ export default function Portfolio() {
       </section>
 
       {/* Category Filter */}
-      <section className="py-8 px-6 lg:px-8 bg-white sticky top-20 z-40 border-b border-gray-200">
+      <motion.section
+        ref={filterRef}
+        className="py-8 px-6 lg:px-8 bg-white sticky top-0 z-40 border-b border-gray-200"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-wrap justify-center gap-4">
             {["all", "portraits", "nature", "events"].map((category) => (
@@ -95,7 +123,7 @@ export default function Portfolio() {
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Gallery Grid */}
       <section className="py-12 px-6 lg:px-8 bg-[#FAFAF9]">
